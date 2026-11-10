@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Администраторы и сессии ────────────────────────────────────────────────
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String    @default("Администратор")
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+}
+
+model Session {
+  id        String     @id @default(cuid())
+  tokenHash String     @unique
+  userId    String
+  user      AdminUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime   @default(now())
+  @@index([userId])
+}
+
+// Журнал попыток входа — защита от перебора паролей
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  ip        String
+  email     String   @default("")
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  @@index([ip, createdAt])
+}
+
+// ─── Контент ────────────────────────────────────────────────────────────────
+
+model Category {
+  id              String     @id @default(cuid())
+  slug            String     @unique
+  title           String
+  description     String     @default("")
+  seoTitle        String     @default("")
+  metaDescription String     @default("")
+  imageMediaId    String?
+  imageMedia      Media?     @relation("CategoryImage", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  sortOrder       Int        @default(0)
+  featured        Boolean    @default(false)
+  parentId        String?
+  parent          Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children        Category[] @relation("CategoryTree")
+  articles        Article[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  @@index([sortOrder])
+}
+
+model Article {
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  title           String
+  excerpt         String           @default("")
+  contentHtml     String           @default("")
+  contentPlain    String           @default("")
+  categoryId      String
+  category        Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  tags            String           @default("")
+  coverMediaId    String?
+  coverMedia      Media?           @relation("ArticleCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  videoUrl        String           @default("")
+  authorName      String           @default("")
+  legalBasis      String           @default("")
+  courtPractice   String           @default("") // связанные судебные материалы / практика
+  deadlines       String           @default("") // ключевые сроки по теме (структурированное поле)
+  documents       String           @default("") // список документов (структурированное поле)
+  seoTitle        String           @default("")
+  metaDescription String           @default("")
+  status          String           @default("DRAFT") // DRAFT | PUBLISHED
+  isTest          Boolean          @default(false)
+  views           Int              @default(0)
+  publishedAt     DateTime?
+  checkedAt       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  relatedLinks    RelatedArticle[] @relation("ArticleSource")
+  relatedTargets  RelatedArticle[] @relation("ArticleTarget")
+  @@index([status, publishedAt])
+  @@index([categoryId, status, publishedAt])
+}
+
+// Явная связь «похожие статьи» (выбирается администратором)
+model RelatedArticle {
+  id        String  @id @default(cuid())
+  articleId String
+  article   Article @relation("ArticleSource", fields: [articleId], references: [id], onDelete: Cascade)
+  relatedId String
+  related   Article @relation("ArticleTarget", fields: [relatedId], references: [id], onDelete: Cascade)
+  @@unique([articleId, relatedId])
+  @@index([articleId])
+}
+
+model Media {
+  id           String    @id @default(cuid())
+  filename     String
+  originalName String    @default("")
+  mime         String
+  size         Int
+  width        Int?
+  height       Int?
+  alt          String    @default("")
+  description  String    @default("")
+  createdAt    DateTime  @default(now())
+  covers       Article[] @relation("ArticleCover")
+  categoryImages Category[] @relation("CategoryImage")
+}
+
+// ─── Обратная связь ─────────────────────────────────────────────────────────
+
+model Submission {
+  id        String   @id @default(cuid())
+  name      String
+  contact   String
+  topic     String   @default("")
+  message   String
+  pageUrl   String   @default("")
+  ip        String   @default("")
+  userAgent String   @default("")
+  status    String   @default("NEW") // NEW | IN_PROGRESS | DONE
+  emailSent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  @@index([status, createdAt])
+  @@index([ip, createdAt])
+}
+
+// ─── Настройки сайта (key-value) ────────────────────────────────────────────
+
+model Setting {
+  key   String @id
+  value String @default("")
+}
+
+// ─── Редиректы при изменении URL ────────────────────────────────────────────
+
+model Redirect {
+  id        String   @id @default(cuid())
+  fromPath  String   @unique
+  toPath    String
+  code      Int      @default(301)
+  createdAt DateTime @default(now())
+  @@index([fromPath])
+}

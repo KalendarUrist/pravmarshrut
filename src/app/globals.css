@@ -1,0 +1,421 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-pt-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-pt-serif), Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-gold: var(--gold);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/*
+ * Палитра юридического сайта по макету: белый фон, графитовый текст,
+ * глубокий тёмно-синий #11263C как основной цвет, светлая серо-голубая
+ * заливка плиток и карточек. Значение --primary может переопределяться
+ * из админ-панели (настройка «Основной цвет»).
+ */
+:root {
+  --radius: 0.75rem;
+  --background: #fdfdff;
+  --foreground: #1f2733;
+  --card: #ffffff;
+  --card-foreground: #1f2733;
+  --popover: #ffffff;
+  --popover-foreground: #1f2733;
+  --primary: #11263c;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f5f9;
+  --secondary-foreground: #11263c;
+  --muted: #f4f6f8;
+  --muted-foreground: #5b6b7c;
+  --accent: #edf2f9;
+  --accent-foreground: #11263c;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --border: #e3e9f0;
+  --input: #d9e0e7;
+  --ring: #11263c;
+  --gold: #8c6d3f;
+  --chart-1: #11263c;
+  --chart-2: #3e6b99;
+  --chart-3: #8c6d3f;
+  --chart-4: #64748b;
+  --chart-5: #b8c4d0;
+  --sidebar: #f8fafb;
+  --sidebar-foreground: #1f2733;
+  --sidebar-primary: #11263c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #edf2f9;
+  --sidebar-accent-foreground: #11263c;
+  --sidebar-border: #e3e9f0;
+  --sidebar-ring: #11263c;
+}
+
+.dark {
+  --background: #10161d;
+  --foreground: #e6ebf1;
+  --card: #161d26;
+  --card-foreground: #e6ebf1;
+  --popover: #161d26;
+  --popover-foreground: #e6ebf1;
+  --primary: #7da2c8;
+  --primary-foreground: #10161d;
+  --secondary: #1d2632;
+  --secondary-foreground: #e6ebf1;
+  --muted: #1d2632;
+  --muted-foreground: #93a3b5;
+  --accent: #1d2632;
+  --accent-foreground: #e6ebf1;
+  --destructive: #e5484d;
+  --border: #253040;
+  --input: #253040;
+  --ring: #7da2c8;
+  --sidebar: #161d26;
+  --sidebar-foreground: #e6ebf1;
+  --sidebar-primary: #7da2c8;
+  --sidebar-primary-foreground: #10161d;
+  --sidebar-accent: #1d2632;
+  --sidebar-accent-foreground: #e6ebf1;
+  --sidebar-border: #253040;
+  --sidebar-ring: #7da2c8;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background font-sans text-foreground;
+    font-feature-settings: "liga" 1, "kern" 1;
+    text-rendering: optimizeLegibility;
+  }
+  html {
+    scroll-behavior: smooth;
+    /* отступ под фиксированные якорные заголовки */
+    scroll-padding-top: 5.5rem;
+  }
+}
+
+/* Контейнер макета: контент ≈1280px, на 1440 — боковые поля ≈80px */
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 85rem;
+  padding-inline: 1rem;
+  @media (min-width: 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* ─── Типографика статей ─────────────────────────────────────────────── */
+
+.article-content {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--foreground);
+  overflow-wrap: break-word;
+}
+.article-content > * + * {
+  margin-top: 1em;
+}
+.article-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 2.25rem;
+  scroll-margin-top: 5.5rem;
+}
+.article-content h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  scroll-margin-top: 5.5rem;
+}
+.article-content h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+.article-content ul,
+.article-content ol {
+  padding-left: 1.5rem;
+}
+.article-content ul {
+  list-style: disc;
+}
+.article-content ol {
+  list-style: decimal;
+}
+.article-content li + li {
+  margin-top: 0.4em;
+}
+.article-content a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  text-underline-offset: 3px;
+}
+.article-content a:hover {
+  text-decoration-color: var(--primary);
+}
+.article-content blockquote {
+  border-left: 3px solid var(--gold);
+  background: var(--muted);
+  padding: 0.875rem 1.25rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.article-content figure figcaption {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+.article-content mark {
+  background: color-mix(in srgb, var(--gold) 25%, transparent);
+  border-radius: 2px;
+}
+
+/* Таблицы: горизонтальная прокрутка на мобильных */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 1em;
+}
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 480px;
+}
+.article-content th,
+.article-content td {
+  border: 1px solid var(--border);
+  padding: 0.625rem 0.875rem;
+  text-align: left;
+  vertical-align: top;
+}
+.article-content th {
+  background: var(--secondary);
+  font-weight: 600;
+}
+
+/* Информационные блоки */
+.callout {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  font-size: 0.975rem;
+}
+.callout-info {
+  background: #eef4fa;
+  border-left-color: #3e6b99;
+}
+.callout-warning {
+  background: #fdf6ec;
+  border-left-color: #8c6d3f;
+}
+.callout-law {
+  background: #f1f4f7;
+  border-left-color: #16324f;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+/* Блоки «Вопрос — ответ» */
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  background: var(--card);
+}
+.faq-item + .faq-item {
+  margin-top: 0.75rem;
+}
+.faq-item .faq-q {
+  font-weight: 600;
+  margin-top: 0 !important;
+}
+
+/* Скрытый honeypot-поле форм */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+}
+
+/* Аккуратные скроллбары в админ-панели */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c3cdd8;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ─── Редактор TipTap (админ-панель) ─────────────────────────────────── */
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #93a3b5;
+  pointer-events: none;
+  height: 0;
+}
+.tiptap .video-embed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  border: 2px dashed color-mix(in srgb, var(--primary) 40%, transparent);
+  border-radius: 8px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+.tiptap .video-embed::after {
+  content: '🎬 Видео: ' attr(data-url);
+  padding: 12px;
+  word-break: break-all;
+}
+.tiptap .callout,
+.tiptap .faq-item {
+  margin-top: 1em;
+}
+.tiptap .faq-q {
+  margin-top: 0 !important;
+}
+.tiptap table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+.tiptap table td,
+.tiptap table th {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  vertical-align: top;
+  position: relative;
+}
+.tiptap table th {
+  background: var(--secondary);
+  font-weight: 600;
+  text-align: left;
+}
+.tiptap .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  pointer-events: none;
+}
+
+/* ─── Главный экран (светлый серо-голубой фон как в макете) ─────────── */
+
+.hero-band {
+  background: linear-gradient(100deg, #e9eef6 0%, #f5f8fb 46%, #e3eaf3 100%);
+}
+
+/* Аккуратная плитка юридической категории: заливка без рамки, как в макете */
+.chip-card {
+  background: var(--secondary);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.chip-card:hover {
+  background: #e8eef5;
+  box-shadow: 0 1px 3px rgb(17 38 60 / 0.07);
+}
+
+/* ─── Нативные <dialog>: модальное окно и выезжающее мобильное меню ───── */
+
+dialog.site-modal[open] {
+  animation: site-modal-in 0.15s ease-out;
+}
+@keyframes site-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+dialog.site-drawer[open] {
+  animation: site-drawer-in 0.2s ease-out;
+}
+@keyframes site-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+dialog.site-drawer::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+dialog.site-modal::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+/* Печать статей без навигации */
+@media print {
+  header, footer, .no-print, aside {
+    display: none !important;
+  }
+}
